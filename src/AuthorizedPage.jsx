@@ -30,7 +30,7 @@ const AuthorizedPage = () => {
 
     const params = new URLSearchParams();
     params.append("grant_type", "authorization_code");
-    params.append("client_id", "public-client"); // Matches backend
+    params.append("client_id", "public-client");
     params.append("redirect_uri", "http://localhost:5173/authorized");
     params.append("code", code);
     params.append("code_verifier", codeVerifier);
@@ -41,13 +41,11 @@ const AuthorizedPage = () => {
         params.toString(),
         {
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        },
+        }
       );
 
-      // Clear verifier for security
       sessionStorage.removeItem("code_verifier");
 
-      // Save standard OAuth2 tokens
       localStorage.setItem("access_token", response.data.access_token);
       localStorage.setItem("refresh_token", response.data.refresh_token);
       localStorage.setItem("id_token", response.data.id_token);
@@ -55,10 +53,7 @@ const AuthorizedPage = () => {
       navigate("/dashboard");
     } catch (err) {
       console.error(err);
-      setError(
-        "Failed to exchange code for token. " +
-          (err.response?.data?.error_description || ""),
-      );
+      setError("Failed to exchange code for token.");
     }
   };
 
@@ -67,19 +62,14 @@ const AuthorizedPage = () => {
       {error ? (
         <div className="p-4 bg-red-100 text-red-600 rounded-lg shadow font-bold text-center">
           <p>{error}</p>
-          <button
-            onClick={() => navigate("/login")}
-            className="mt-4 px-4 py-2 bg-red-600 text-white rounded"
-          >
+          <button onClick={() => navigate("/login")} className="mt-4 px-4 py-2 bg-red-600 text-white rounded">
             Back to Login
           </button>
         </div>
       ) : (
         <div className="flex flex-col items-center">
           <div className="w-12 h-12 border-4 border-black border-t-transparent rounded-full animate-spin mb-4"></div>
-          <h2 className="text-xl font-semibold text-gray-700">
-            Securing your session...
-          </h2>
+          <h2 className="text-xl font-semibold text-gray-700">Securing your session...</h2>
         </div>
       )}
     </div>
