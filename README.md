@@ -1,18 +1,42 @@
-# React + Vite
+# 🛡️ React OAuth2 PKCE Client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the frontend application for the **Standard Security** project. It is a modern React application built with Vite that implements the **OAuth2 Authorization Code Flow with PKCE (Proof Key for Code Exchange)**. 
 
-Currently, two official plugins are available:
+It acts as a secure Public Client connecting to a Spring Boot Authorization Server, featuring smart token management and silent background refreshing.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## ✨ Features
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+* **OAuth2 PKCE Integration:** Securely generates `code_verifier` and `code_challenge` directly in the browser to prevent authorization code interception.
+* **Silent Background Refreshing:** A headless `<SessionManager />` component continuously monitors the JWT expiration and automatically requests a new access token 60 seconds before it expires.
+* **Smart API Client (`api.js`):** A custom Axios instance that automatically attaches the `Bearer` token to requests. If a `401 Unauthorized` occurs, it pauses the request, refreshes the token, and seamlessly retries the failed API call.
+* **Stateless UI Rendering:** Uses `jwt-decode` to extract `roles`, `features`, and `userTypeId` directly from the token, preventing unnecessary network calls to fetch user data.
+* **Interactive Login UI:** Features an animated login page with SVG elements that track mouse movement and typing focus.
 
-Note: This will impact Vite dev & build performances.
+---
 
-## Expanding the ESLint configuration
+## 🛠️ Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+* **React 18** (Bootstrapped with Vite)
+* **React Router DOM v6** (Routing & Navigation)
+* **Axios** (HTTP Client & Interceptors)
+* **Tailwind CSS** (Styling)
+* **Lucide React** (Icons)
+* **jwt-decode** (Local Token Parsing)
+
+---
+
+## 📁 Project Structure
+
+Here is a quick overview of the core files powering the authentication flow:
+
+```text
+src/
+├── api.js                # Custom Axios instance with auto-refresh & 401 retry logic
+├── pkce.js               # Cryptographic utilities for SHA-256 code challenge generation
+├── SessionManager.jsx    # Headless component that refreshes tokens in the background
+├── App.jsx               # Application router and layout wrapper
+├── LoginPage.jsx         # UI for login form; initiates the PKCE flow
+├── AuthorizedPage.jsx    # The OAuth2 callback route; exchanges the code for JWT tokens
+└── Dashboard.jsx         # Protected route; decodes JWT to display user roles/features
